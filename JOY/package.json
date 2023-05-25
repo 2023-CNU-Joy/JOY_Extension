@@ -1,0 +1,73 @@
+{
+  "name": "JOY",
+  "displayName": "JOY",
+  "description": "Judge On You",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.78.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "JOY",
+          "title": "Judge On Yoyu",
+          "icon": "/resource/inout.png"
+        }
+      ]
+    },
+    "views": {
+      "JOY": [
+        {
+          "id": "joy-input",
+          "name": "Input"
+        },
+        {
+          "id": "joy-output",
+          "name": "Output"
+        }
+      ]
+    },
+    "commands": [{
+      "command": "JOY.test",
+      "title": "judge on you"
+    },
+    {
+      "command": "JOY.show",
+      "title": "show problem"
+    },
+    {
+      "command": "JOY.get",
+      "title": "get problem"
+    },
+    {
+      "command": "JOY.remove",
+      "title": "remove problem"
+    },
+    {
+      "command": "JOY.result",
+      "title": "get result"
+    }]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.78.0",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "eslint": "^8.39.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "typescript": "^5.0.4",
+    "@vscode/test-electron": "^2.3.0"
+  }
+}
