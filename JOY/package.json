@@ -52,6 +52,16 @@
     {
       "command": "JOY.result",
       "title": "get result"
+    }],
+    "configuration": [{
+      "title": "JOY Extension",
+      "properties": {
+          "JOY.serverIP": {
+              "type": "string",
+              "default": "0.0.0.0",
+              "description": "IP of server"
+          }
+      }
     }]
   },
   "scripts": {

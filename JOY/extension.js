@@ -12,6 +12,11 @@ var check;
  */
 function activate(context) {
 
+	const config = vscode.workspace.getConfiguration("JOY");
+
+	var server_ip = config.get("serverIP");
+	console.log("asd" + server_ip);
+
 	let get_problem = vscode.commands.registerCommand('JOY.get', function () {
 		const workspacePath = vscode.workspace.workspaceFolders[0].uri.fsPath;
 		const testcaseFolderName = 'testcase';
@@ -168,7 +173,7 @@ function activate(context) {
 		if (passed) {
 			// vscode.window.showInformationMessage("TestCase에 통과하였습니다.");
 		} else {
-			vscode.window.showErrorMessage('TestCase에 통과하지 못하였습니다.');
+			//vscode.window.showErrorMessage('TestCase에 통과하지 못하였습니다.');
 			check = false;
 		}
 	}
