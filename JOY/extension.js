@@ -112,27 +112,21 @@ function activate(context) {
 	});
 
 
-	function createInputTreeView(){
-		vscode.window.createTreeView('joy-input',{
-			treeDataProvider: new inputProvider()
+	function createTestcaseSampleTreeView(){
+		vscode.window.createTreeView('joy-InOut',{
+			treeDataProvider: new testcaseSampleProvider()
 		});
 	}
 	//데이터 삽입
-	const input = new Input("a",vscode.TreeItemCollapsibleState.None);
-	inputList.push(input);
-
-	function createOutputTreeView(){
-		vscode.window.createTreeView('joy-output',{
-			treeDataProvider: new outputProvider()
-		});
+	for(var i = 0 ; i < NumberOfTest ; i++){
+		const test = new TestcaseSample("test" + i, vscode.TreeItemCollapsibleState.Collapsed);
+		const input = new TestcaseSample("Input",vscode.TreeItemCollapsibleState.Collapsed);
+		const output = new TestcaseSample("Output",vscode.TreeItemCollapsibleState.Collapsed);
+		test.addChild(input);
+		test.addChild(output);
+		outputList.push(test)
 	}
-	//데이터 삽입
-	const output = new Output("a",vscode.TreeItemCollapsibleState.None);
-	outputList.push(output);
-
-
-	createInputTreeView();
-	createOutputTreeView();
+	createTestcaseSampleTreeView();
 
 
 	let test = vscode.commands.registerCommand('JOY.test', function () {
@@ -245,42 +239,35 @@ function readInputFromFile(filePath) {
 	}
 }
 
-class inputProvider{
+class testcaseSampleProvider{
 	getTreeItem(element) {
         return element;
     }
 	getChildren(element){
-        const temp = Object.assign([], inputList);
-        // return Promise.resolve(temp.reverse());
-		return Promise.resolve(temp);
-    }
-}
-class Input extends vscode.TreeItem {
-    constructor(
-        label,
-        collapsibleState
-    ) {
-        super(label, collapsibleState);
+        if (!element) {
+			// Root 노드의 하위 항목 반환
+			return Promise.resolve(outputList);
+		} else {
+			// 각 항목의 하위 항목 반환
+			return Promise.resolve(element.children);
+		}
     }
 }
 
-class outputProvider{
-	getTreeItem(element) {
-        return element;
-    }
-	getChildren(element){
-        const temp = Object.assign([], outputList);
-        // return Promise.resolve(temp.reverse());
-		return Promise.resolve(temp);
-    }
-}
-class Output extends vscode.TreeItem {
+class TestcaseSample extends vscode.TreeItem {
     constructor(
         label,
-        collapsibleState
+        collapsibleState,
     ) {
         super(label, collapsibleState);
+		this.children = []
     }
+	addChild(child){
+		this.children.push(child);
+	}
+	getChildrne(){
+		return this.children;
+	}
 }
 
 module.exports = {
