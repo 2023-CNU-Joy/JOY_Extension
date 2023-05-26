@@ -7,6 +7,8 @@ var inputList = [];
 var outputList = [];
 var check;
 
+var NumberOfTest = 5;
+
 /**
  * @param {vscode.ExtensionContext} context
  */
@@ -17,17 +19,44 @@ function activate(context) {
 	var server_ip = config.get("serverIP");
 	console.log("asd" + server_ip);
 
-	let get_problem = vscode.commands.registerCommand('JOY.get', function () {
-		const workspacePath = vscode.workspace.workspaceFolders[0].uri.fsPath;
-		const testcaseFolderName = 'testcase';
-		const testcaseFolderPath = path.join(workspacePath, testcaseFolderName);
-		fs.mkdir(testcaseFolderPath, (err) => {
+	async function makeTestCase(i){
+		var path1 = vscode.workspace.workspaceFolders[0].uri.fsPath + "/test"+i;
+		const testCaseFolderName = 'testcase';
+		const testCaseFolderPath = path.join(path1, testCaseFolderName);
+		fs.mkdir(testCaseFolderPath, (err) => {
 		  	if (err) {
 				vscode.window.showErrorMessage('Failed to create testcase folder: ' + err.message);
 			} else {
 				vscode.window.showInformationMessage('Testcase folder created successfully');
 		  	}
-    	});
+		});
+	}
+
+	let get_problem = vscode.commands.registerCommand('JOY.get', async function () {
+
+		const workspacePath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+		const testFolderName = 'test';
+		const testFolderPath = path.join(workspacePath, testFolderName);
+		for(var i = 0 ; i < NumberOfTest ; i++){
+			fs.mkdirSync(testFolderPath + i);
+			await makeTestCase(i);
+		}
+
+
+
+
+
+
+		// const workspacePath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+		// const testcaseFolderName = 'testcase';
+		// const testcaseFolderPath = path.join(workspacePath, testcaseFolderName);
+		// fs.mkdir(testcaseFolderPath, (err) => {
+		//   	if (err) {
+		// 		vscode.window.showErrorMessage('Failed to create testcase folder: ' + err.message);
+		// 	} else {
+		// 		vscode.window.showInformationMessage('Testcase folder created successfully');
+		//   	}
+    	// });
 	});
 
 
@@ -59,7 +88,7 @@ function activate(context) {
 		const view = vscode.window.createWebviewPanel(
 			'joy.problem',
 			'JOY',
-			vscode.ViewColumn.One,
+			vscode.ViewColumn.Beside,
 			{
 			  enableScripts: true
 			}
