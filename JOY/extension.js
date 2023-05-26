@@ -11,6 +11,7 @@ var NumberOfTest = 5;
 
 var problems = [];
 
+
 /**
  * @param {vscode.ExtensionContext} context
  */
@@ -18,8 +19,10 @@ function activate(context) {
 
 	const config = vscode.workspace.getConfiguration("JOY");
 
-	var server_ip = config.get("serverIP");
+	const server_ip = config.get("serverIP");
+	const ID = config.get("ID");
 	console.log("asd" + server_ip);
+	console.log("asd" + ID);
 
 	async function makeTestCase(i){
 		var path1 = vscode.workspace.workspaceFolders[0].uri.fsPath + "/test"+i;
@@ -98,6 +101,16 @@ function activate(context) {
 		view.webview.html = htmlContent;
 	});
 
+	let send_result = vscode.commands.registerCommand('JOY.send', function () {
+		var pass = [];
+		for(var i = 0 ; i < NumberOfTest ; i++){
+			pass.push(problems[i].check);
+		}
+		for(var i = 0 ; i < NumberOfTest ; i++){
+			console.log(pass);
+		}
+	});
+
 
 	function createInputTreeView(){
 		vscode.window.createTreeView('joy-input',{
@@ -140,7 +153,6 @@ function activate(context) {
         // main.c 파일의 상대 경로 계산
         const filePath = path.join(path.dirname(activeFilePath), 'main.c');
 		const programPath = path.join(path.dirname(activeFilePath), 'program');
-		// vscode.window.showInformationMessage(filePath);
         // 컴파일 명령어와 실행 인수 설정
         const compileCommand = 'gcc';
         const compileArgs = ['-o', programPath, filePath];  // 컴파일하여 'program'이라는 실행 파일 생성

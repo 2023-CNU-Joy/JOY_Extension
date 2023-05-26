@@ -52,6 +52,10 @@
     {
       "command": "JOY.result",
       "title": "get result"
+    },
+    {
+      "command": "JOY.send",
+      "title": "send result"
     }],
     "configuration": [{
       "title": "JOY Extension",
@@ -60,6 +64,15 @@
               "type": "string",
               "default": "0.0.0.0",
               "description": "IP of server"
+          }
+      }
+    },{
+      "title": "Your ID",
+      "properties": {
+          "JOY.ID": {
+              "type": "string",
+              "default": "",
+              "description": "Number or String for identification"
           }
       }
     }]
