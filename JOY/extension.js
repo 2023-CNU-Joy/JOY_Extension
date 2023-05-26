@@ -56,16 +56,16 @@ function activate(context) {
 
 
 	let remove_problem = vscode.commands.registerCommand('JOY.remove', function () {
-		const workspacePath = vscode.workspace.workspaceFolders[0].uri.fsPath;
-      	const testcaseFolderName = 'testcase';
-      	const testcaseFolderPath = path.join(workspacePath, testcaseFolderName);
-      	fs.rmdir(testcaseFolderPath, { recursive: true }, (err) => {
-        	if (err) {
-        		vscode.window.showErrorMessage('Failed to delete testcase folder: ' + err.message);
-        	} else {
-        		vscode.window.showInformationMessage('Testcase folder deleted successfully');
-        	}
-      	});
+		// const workspacePath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+      	// const testcaseFolderName = 'testcase';
+      	// const testcaseFolderPath = path.join(workspacePath, testcaseFolderName);
+      	// fs.rmdir(testcaseFolderPath, { recursive: true }, (err) => {
+        // 	if (err) {
+        // 		vscode.window.showErrorMessage('Failed to delete testcase folder: ' + err.message);
+        // 	} else {
+        // 		vscode.window.showInformationMessage('Testcase folder deleted successfully');
+        // 	}
+      	// });
 	});
 
 
@@ -225,10 +225,11 @@ function activate(context) {
 	}
 
 	context.subscriptions.push(get_problem);
-	context.subscriptions.push(remove_problem);
+	// context.subscriptions.push(remove_problem);
 	context.subscriptions.push(show_problem);
 	context.subscriptions.push(get_result);
 	context.subscriptions.push(test);
+	context.subscriptions.push(send_result);
 }
 
 function deactivate() {}
