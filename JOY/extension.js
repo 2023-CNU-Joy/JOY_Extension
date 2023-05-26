@@ -5,9 +5,11 @@ const fs = require('fs');
 
 var inputList = [];
 var outputList = [];
-var check;
+var check = true;
 
 var NumberOfTest = 5;
+
+var problems = [];
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -33,30 +35,20 @@ function activate(context) {
 	}
 
 	let get_problem = vscode.commands.registerCommand('JOY.get', async function () {
-
 		const workspacePath = vscode.workspace.workspaceFolders[0].uri.fsPath;
 		const testFolderName = 'test';
 		const testFolderPath = path.join(workspacePath, testFolderName);
 		for(var i = 0 ; i < NumberOfTest ; i++){
 			fs.mkdirSync(testFolderPath + i);
 			await makeTestCase(i);
+			var problem = {
+				id : i,
+				check : false,
+				path : testFolderPath,
+				isCompile : false
+			};
+			problems.push(problem);
 		}
-
-
-
-
-
-
-		// const workspacePath = vscode.workspace.workspaceFolders[0].uri.fsPath;
-		// const testcaseFolderName = 'testcase';
-		// const testcaseFolderPath = path.join(workspacePath, testcaseFolderName);
-		// fs.mkdir(testcaseFolderPath, (err) => {
-		//   	if (err) {
-		// 		vscode.window.showErrorMessage('Failed to create testcase folder: ' + err.message);
-		// 	} else {
-		// 		vscode.window.showInformationMessage('Testcase folder created successfully');
-		//   	}
-    	// });
 	});
 
 
@@ -75,8 +67,15 @@ function activate(context) {
 
 
 	let get_result = vscode.commands.registerCommand('JOY.result', function () {
-		console.log(check)
-		if(check){
+		const activeEditor = vscode.window.activeTextEditor;
+		const activeFilePath = activeEditor.document.fileName;
+		const problemNum = (path.dirname(activeFilePath)).slice(-1);
+		console.log(problems[problemNum].id);
+		if(problems[problemNum].isCompile){
+			problems[problemNum].check = check;
+		}
+		console.log(problems[problemNum].check);
+		if(problems[problemNum].check){
 			vscode.window.showInformationMessage("TestCase에 통과하였습니다.");
 		}else{
 			vscode.window.showErrorMessage(`TestCase에 통과하지 못하였습니다.`);
@@ -169,18 +168,16 @@ function activate(context) {
 
 					//표준 입력을 위한 stdin
 					runProcess.stdin.write(input[i]);
-					// console.log(i+" "+input[i]);
 					runProcess.stdin.end();
 
 					const temp_output = path.join(path.dirname(activeFilePath), 'testcase/tcout'+i);
 					const output_value = readInputFromFile(temp_output);
 					runProcess.stdout.on('data',async (data) => {
-						console.log(data.toString()+" "+ output_value)
+						// console.log(data.toString()+" "+ output_value)
 						if(data.toString() == output_value){
 							await handleTestCaseResult(true);
 						}else{
         					await handleTestCaseResult(false);
-							check = false;
 						}
 					});
 					runProcess.stderr.on('data', (data) => {
@@ -201,8 +198,16 @@ function activate(context) {
 	async function handleTestCaseResult(passed) {
 		if (passed) {
 			// vscode.window.showInformationMessage("TestCase에 통과하였습니다.");
+			const activeEditor = vscode.window.activeTextEditor;
+			const activeFilePath = activeEditor.document.fileName;
+			const problemNum = (path.dirname(activeFilePath)).slice(-1);
+			problems[problemNum].isCompile = true;
 		} else {
 			//vscode.window.showErrorMessage('TestCase에 통과하지 못하였습니다.');
+			const activeEditor = vscode.window.activeTextEditor;
+			const activeFilePath = activeEditor.document.fileName;
+			const problemNum = (path.dirname(activeFilePath)).slice(-1);
+			problems[problemNum].isCompile = true;
 			check = false;
 		}
 	}
