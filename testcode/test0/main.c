@@ -1,9 +1,22 @@
-#include<stdio.h>
+#include <stdio.h>
+#define _CRT_SECURE_NO_WARNINGS
 
-int main(){
-    int num;
-    int num2;
-    scanf("%d %d", &num, &num2);
-    // printf("%d", num + 10);
-    printf("%d %d", num + 10, 2);
+int main(void) {
+    int N, K, i, cnt = 0;
+    int arr[10];
+    scanf("%d %d ", &N, &K);
+    for (i = 0; i < N; i++) {
+        scanf("%d", &arr[i]);
+    }
+    i = N - 1;
+    while (K > 0) {
+        if (arr[i] > K) {
+            i--;
+        }
+        else {
+            K = K - arr[i];
+            cnt++;
+        }
+    }
+    printf("%d", cnt);
 }
