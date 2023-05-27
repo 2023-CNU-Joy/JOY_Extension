@@ -29,49 +29,58 @@
         }
       ]
     },
-    "commands": [{
-      "command": "JOY.test",
-      "title": "judge on you"
-    },
-    {
-      "command": "JOY.show",
-      "title": "show problem"
-    },
-    {
-      "command": "JOY.get",
-      "title": "get problem"
-    },
-    {
-      "command": "JOY.remove",
-      "title": "remove problem"
-    },
-    {
-      "command": "JOY.result",
-      "title": "get result"
-    },
-    {
-      "command": "JOY.send",
-      "title": "send result"
-    }],
-    "configuration": [{
-      "title": "JOY Extension",
-      "properties": {
+    "commands": [
+      {
+        "command": "JOY.test",
+        "title": "judge on you"
+      },
+      {
+        "command": "JOY.show",
+        "title": "show problem"
+      },
+      {
+        "command": "JOY.get",
+        "title": "get problem"
+      },
+      {
+        "command": "JOY.remove",
+        "title": "remove problem"
+      },
+      {
+        "command": "JOY.result",
+        "title": "get result"
+      },
+      {
+        "command": "JOY.send",
+        "title": "send result"
+      },
+      {
+        "command": "JOY.testserver",
+        "title": "testserver"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "JOY Extension",
+        "properties": {
           "JOY.serverIP": {
-              "type": "string",
-              "default": "0.0.0.0",
-              "description": "IP of server"
+            "type": "string",
+            "default": "0.0.0.0",
+            "description": "IP of server"
           }
-      }
-    },{
-      "title": "Your ID",
-      "properties": {
+        }
+      },
+      {
+        "title": "Your ID",
+        "properties": {
           "JOY.ID": {
-              "type": "string",
-              "default": "",
-              "description": "Number or String for identification"
+            "type": "string",
+            "default": "",
+            "description": "Number or String for identification"
           }
+        }
       }
-    }]
+    ]
   },
   "scripts": {
     "lint": "eslint .",
@@ -79,14 +88,19 @@
     "test": "node ./test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.78.0",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
+    "@types/vscode": "^1.78.0",
+    "@vscode/test-electron": "^2.3.0",
     "eslint": "^8.39.0",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
-    "typescript": "^5.0.4",
-    "@vscode/test-electron": "^2.3.0"
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@types/axios": "^0.14.0",
+    "axios": "^0.22.0",
+    "crypto-js": "^4.0.0"
   }
 }
