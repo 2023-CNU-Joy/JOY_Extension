@@ -34,7 +34,7 @@ function activate(context) {
 		try {
 		  	const response = await axios.get(server_ip+"/api/v1/problems");
 		  	const data = response.data;
-		  	console.log(data);
+		  	console.log("Prpblems : " + data);
 		//   var ddata = JSON.stringify();
 		  	NumberOfTest = data.length;
 
@@ -66,11 +66,11 @@ function activate(context) {
 		try {
 		  	const response = await axios.get(server_ip+"/api/v1/testcases");
 		  	const data = response.data;
-		  	console.log(data);
+		  	// console.log(data);
 			for(var i = 0 ; i < data.length ; i++){
 				for(var j = 0 ; j < data[i].length ; j++){
 					for(var k = 0 ; k < data[i][j].length ; k++){
-						console.log(decodeByAES256(AESKEY, data[i][j][k]))
+						// console.log(decodeByAES256(AESKEY, data[i][j][k]))
 					}
 				}
 			}
@@ -129,7 +129,7 @@ function activate(context) {
 		try {
 			const response = await axios.get(server_ip+"/api/v1/testcases");
 			const data = response.data;
-			console.log(data);
+			console.log("Encrypto Testcase : " + data);
 			for(var i = 0 ; i < NumberOfTest ; i++){
 				NumberOfTestcase.push(data[i][0].length);
 			}
@@ -170,11 +170,11 @@ function activate(context) {
 		const activeEditor = vscode.window.activeTextEditor;
 		const activeFilePath = activeEditor.document.fileName;
 		const problemNum = (path.dirname(activeFilePath)).slice(-1);
-		console.log(problems[problemNum].id);
+		console.log("Problem ID : "+problems[problemNum].id);
 		if(problems[problemNum].isCompile){
 			problems[problemNum].check = check;
 		}
-		console.log(problems[problemNum].check);
+		console.log("Problem check : " + problems[problemNum].check);
 		if(problems[problemNum].check){
 			vscode.window.showInformationMessage("TestCase에 통과하였습니다.");
 		}else{
@@ -200,13 +200,29 @@ function activate(context) {
 	});
 
 	let send_result = vscode.commands.registerCommand('JOY.send', function () {
-		var pass = [];
+		var results = [];
 		for(var i = 0 ; i < NumberOfTest ; i++){
-			pass.push(problems[i].check);
+			results.push(problems[i].check);
 		}
-		for(var i = 0 ; i < NumberOfTest ; i++){
-			console.log(pass);
+
+		console.log("Results : " + results);
+
+		const data = {
+			studentId : ID,
+			results : results
 		}
+
+		axios.post(server_ip+"/api/v1/results", JSON.stringify(data), {
+			headers:{
+				'Content-Type': 'application/json'
+			}
+		})
+  		.then(response => {
+    		console.log(response.data); // 응답 데이터 출력
+		})
+  		.catch(error => {
+    		console.error(error); // 오류 출력
+		});
 	});
 
 	let test = vscode.commands.registerCommand('JOY.test', function () {
@@ -238,11 +254,11 @@ function activate(context) {
         const compileProcess = spawn(compileCommand, compileArgs);
 
         compileProcess.stdout.on('data', (data) => {
-            console.log(`컴파일 출력: ${data}`);
+            console.log('컴파일 출력: ' + data);
         });
 
         compileProcess.stderr.on('data', (data) => {
-            console.error(`컴파일 에러: ${data}`);
+            console.error('컴파일 에러: ' + data);
         });
 
         compileProcess.on('close', (code) => {
@@ -274,11 +290,11 @@ function activate(context) {
 						}
 					});
 					runProcess.stderr.on('data', (data) => {
-						console.error(`프로그램 에러: ${data}`);
+						console.error('프로그램 에러: ' + data);
 					});
 
 					runProcess.on('close', (code) => {
-						console.log(`프로그램 종료, 종료 코드: ${code}`);
+						console.log('프로그램 종료, 종료 코드: ' + code);
 					});
 				}
             } else {
@@ -318,7 +334,7 @@ function readInputFromFile(filePath) {
 	  const input = fs.readFileSync(absolutePath, 'utf-8');
 	  return input;
 	} catch (error) {
-	  console.error(`Error reading input file: ${error}`);
+	  console.error('Error reading input file: ' + error);
 	  return null;
 	}
 }
