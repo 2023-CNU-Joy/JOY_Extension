@@ -15,6 +15,10 @@ var NumberOfTestcase = [];
 var problems = [];
 
 const AESKEY = "0123456789abcdef0123456789abcdef";
+const config = vscode.workspace.getConfiguration("JOY");
+
+var server_ip = config.get("serverIP");
+var ID = config.get("ID");
 
 
 /**
@@ -22,12 +26,12 @@ const AESKEY = "0123456789abcdef0123456789abcdef";
  */
 function activate(context) {
 
-	const config = vscode.workspace.getConfiguration("JOY");
+	// const config = vscode.workspace.getConfiguration("JOY");
 
-	const server_ip = config.get("serverIP");
-	const ID = config.get("ID");
-	console.log(server_ip);
-	console.log(ID);
+	// const server_ip = config.get("serverIP");
+	// const ID = config.get("ID");
+	// console.log(server_ip);
+	// console.log(ID);
 
 
 	async function fetchProblem() {
@@ -62,24 +66,6 @@ function activate(context) {
 		}
 	}
 
-	async function fetchTestcase() {
-		try {
-		  	const response = await axios.get(server_ip+"/api/v1/testcases");
-		  	const data = response.data;
-		  	// console.log(data);
-			for(var i = 0 ; i < data.length ; i++){
-				for(var j = 0 ; j < data[i].length ; j++){
-					for(var k = 0 ; k < data[i][j].length ; k++){
-						// console.log(decodeByAES256(AESKEY, data[i][j][k]))
-					}
-				}
-			}
-		  // 데이터를 활용하여 추가적인 작업 수행
-		} catch (error) {
-		  	console.error('API 호출 중 오류가 발생했습니다:', error.message);
-		}
-	}
-
 	function decodeByAES256(key, data){
 		const cipher = CryptoJS.AES.decrypt(data, CryptoJS.enc.Utf8.parse(key), {
 			iv: CryptoJS.enc.Utf8.parse(""),
@@ -95,9 +81,9 @@ function activate(context) {
 		const testCaseFolderPath = path.join(path1, testCaseFolderName);
 		fs.mkdir(testCaseFolderPath, (err) => {
 		  	if (err) {
-				vscode.window.showErrorMessage('Failed to create testcase folder: ' + err.message);
+				console.log('Failed to create testcase folder: ' + err.message);
 			} else {
-				vscode.window.showInformationMessage('Testcase folder created successfully');
+				console.log('Testcase folder created successfully');
 		  	}
 		});
 
@@ -123,7 +109,36 @@ function activate(context) {
 	  }
 	}
 
+	let help = vscode.commands.registerCommand('JOY.help', function () {
+		const view = vscode.window.createWebviewPanel(
+			'joy.help',
+			'Help JOY',
+			vscode.ViewColumn.Beside,
+			{
+			  enableScripts: true
+			}
+		);
+		let htmlContent = view.webview.html;
+		  // HTML 내용에 글씨를 추가합니다.
+		  htmlContent += '<h2>1. Enter the server\'s IP and your ID in the settings of the JOY Extension</h2> \
+		  				  <h2>2. Use the "JOY:Get Problem" command to receive the problem</h2>\
+						  <h2>3. Use the "JOY:Show Problem" command to determine the content of the problem</h2>\
+						  <h2>4. Example inputs and outputs for the problem can be found in the sidebar</h2>\
+						  <h2>5. Write the code in the main.c in each test folder created</h2>\
+						  <h2>6. When you\'re done writing the code, use the "JOY:Judge On You" command to score</h2>\
+						  <h2>7. Use the "JOY:Get Result" command to check the results for the code</h2>\
+						  <h2>7. If you have solved all the problems, use the "JOY:Send Result" command to send the results</h2>'
+						  
+		view.webview.html = htmlContent;
+	});
+
 	let get_problem = vscode.commands.registerCommand('JOY.get', async function () {
+
+		server_ip = config.get("serverIP");
+		ID = config.get("ID");
+		console.log(server_ip);
+		console.log(ID);
+
 		await fetchProblem();
 
 		try {
@@ -164,6 +179,8 @@ function activate(context) {
 		}
 		createTestcaseSampleTreeView();
 
+		vscode.window.showInformationMessage("문제를 성공적으로 가지고 왔습니다. test 폴더의 main.c에서 코드를 작성해주세요.")
+
 	});
 
 	let get_result = vscode.commands.registerCommand('JOY.result', function () {
@@ -174,6 +191,7 @@ function activate(context) {
 		if(problems[problemNum].isCompile){
 			problems[problemNum].check = check;
 		}
+
 		console.log("Problem check : " + problems[problemNum].check);
 		if(problems[problemNum].check){
 			vscode.window.showInformationMessage("TestCase에 통과하였습니다.");
@@ -194,7 +212,7 @@ function activate(context) {
 			);
 			let htmlContent = view.webview.html;
 			  // HTML 내용에 글씨를 추가합니다.
-			  htmlContent += '<h2>'+problems[i].title+'</h2>'+problems[i].content;
+			  htmlContent += '<h2>' + i + "번 문제 : " + problems[i].title+'</h2>'+problems[i].content;
 			view.webview.html = htmlContent;
 		}
 	});
@@ -225,7 +243,7 @@ function activate(context) {
 		});
 	});
 
-	let test = vscode.commands.registerCommand('JOY.test', function () {
+	let test = vscode.commands.registerCommand('JOY.test', async function () {
 		const activeEditor = vscode.window.activeTextEditor;
         if (!activeEditor) {
             vscode.window.showErrorMessage('열린 파일을 찾을 수 없습니다.');
@@ -288,6 +306,7 @@ function activate(context) {
 						}else{
         					await handleTestCaseResult(false);
 						}
+						vscode.window.showInformationMessage("컴파일이 완료되었습니다. get result 명령을 통해 결과를 확인하세요.");
 					});
 					runProcess.stderr.on('data', (data) => {
 						console.error('프로그램 에러: ' + data);
@@ -324,6 +343,7 @@ function activate(context) {
 	context.subscriptions.push(get_result);
 	context.subscriptions.push(test);
 	context.subscriptions.push(send_result);
+	context.subscriptions.push(help);
 }
 
 function deactivate() {}

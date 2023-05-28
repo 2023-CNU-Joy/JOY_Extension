@@ -32,31 +32,27 @@
     "commands": [
       {
         "command": "JOY.test",
-        "title": "judge on you"
+        "title": "JOY:Judge On You"
       },
       {
         "command": "JOY.show",
-        "title": "show problem"
+        "title": "JOY:Show Problem"
       },
       {
         "command": "JOY.get",
-        "title": "get problem"
-      },
-      {
-        "command": "JOY.remove",
-        "title": "remove problem"
+        "title": "JOY:Get Problem"
       },
       {
         "command": "JOY.result",
-        "title": "get result"
+        "title": "JOY:Get Result"
       },
       {
         "command": "JOY.send",
-        "title": "send result"
+        "title": "JOY:Send Result"
       },
       {
-        "command": "JOY.testserver",
-        "title": "testserver"
+        "command": "JOY.help",
+        "title": "JOY:Help"
       }
     ],
     "configuration": [
