@@ -26,14 +26,6 @@ var ID = config.get("ID");
  */
 function activate(context) {
 
-	// const config = vscode.workspace.getConfiguration("JOY");
-
-	// const server_ip = config.get("serverIP");
-	// const ID = config.get("ID");
-	// console.log(server_ip);
-	// console.log(ID);
-
-
 	async function fetchProblem() {
 		try {
 		  	const response = await axios.get(server_ip+"/api/v1/problems");

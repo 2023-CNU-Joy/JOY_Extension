@@ -16,7 +16,7 @@
       "activitybar": [
         {
           "id": "JOY",
-          "title": "Judge On Yoyu",
+          "title": "Judge On You",
           "icon": "/resource/inout.png"
         }
       ]
@@ -63,12 +63,7 @@
             "type": "string",
             "default": "0.0.0.0",
             "description": "IP of server"
-          }
-        }
-      },
-      {
-        "title": "Your ID",
-        "properties": {
+          },
           "JOY.ID": {
             "type": "string",
             "default": "",
