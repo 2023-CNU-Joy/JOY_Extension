@@ -25,6 +25,22 @@ var ID = config.get("ID");
  */
 function activate(context) {
 
+	const provider = new testcaseSampleProvider();
+	const view = vscode.window.createTreeView('joy-Menu',{
+		treeDataProvider: provider
+	});
+	view.onDidChangeSelection(e => {
+		provider.onTreeItemClick(e.selection[0].label);
+		// console.log(e.selection[0].label)
+	})
+
+	const menuList = ["Get Problem", "Show Problem", "Judge On You", "Get Result", "Send Result"]
+
+	for(var i = 0 ; i < 5 ; i++){
+		const test = new TestcaseSample(menuList[i], vscode.TreeItemCollapsibleState.None);
+		sampleList.push(test);
+	}
+
 	async function fetchProblem() {
 		try {
 		  	const response = await axios.get(server_ip+"/api/v1/problems");
@@ -38,7 +54,6 @@ function activate(context) {
 			const testFolderPath = path.join(workspacePath, testFolderName);
 			for(var i = 0 ; i < NumberOfTest ; i++){
 				fs.mkdirSync(testFolderPath + i);
-				await makeTestCase(i);
 				var problem = {
 					id : i,
 					check : false,
@@ -47,9 +62,12 @@ function activate(context) {
 					title : data[i].title,
 					content : data[i].content,
 					testInputSample : data[i].exampleTestInput,
-					testOutputSample : data[i].exampleTestOut
+					testOutputSample : data[i].exampleTestOut,
+					pass : 0,
+					testNum : 0
 				};
 				problems.push(problem);
+				await makeTestCase(i);
 			}
 		  // 데이터를 활용하여 추가적인 작업 수행
 		} catch (error) {
@@ -86,6 +104,7 @@ function activate(context) {
 			const data = response.data;
 			// console.log(data);
 			var path2 = vscode.workspace.workspaceFolders[0].uri.fsPath + "/test"+num+"/testcase";
+			problems[num].testNum = data[num][0].length;
 			for(var j = 0 ; j < data[num][0].length ; j++){
 				const testCasePath = path.join(path2, "tcin"+j);
 				fs.writeFileSync(testCasePath, data[num][0][j]);
@@ -144,31 +163,42 @@ function activate(context) {
 			console.error('API 호출 중 오류가 발생했습니다:', error.message);
 	  	}
 
-		function createTestcaseSampleTreeView(){
-			vscode.window.createTreeView('joy-InOut',{
-				treeDataProvider: new testcaseSampleProvider()
-			});
-		}
+		// function createTestcaseSampleTreeView(){
+		// 	vscode.window.createTreeView('joy-InOut',{
+		// 		treeDataProvider: new testcaseSampleProvider()
+		// 	});
+		// }
 		//데이터 삽입
-		for(var i = 0 ; i < NumberOfTest ; i++){
-			var inputArray  = problems[i].testInputSample[0].split('\n')
-			var outputArray  = problems[i].testOutputSample[0].split('\n')
-			const test = new TestcaseSample("test" + i, vscode.TreeItemCollapsibleState.Collapsed);
-			const input = new TestcaseSample("Input",vscode.TreeItemCollapsibleState.Collapsed);
-			const output = new TestcaseSample("Output",vscode.TreeItemCollapsibleState.Collapsed);
-			test.addChild(input);
-			test.addChild(output);
-			for(var j = 0 ; j < inputArray.length ; j++){
-				const testcase = new TestcaseSample(inputArray[j],vscode.TreeItemCollapsibleState.None);
-				input.addChild(testcase);
-			}
-			for(var j = 0 ; j < outputArray.length ; j++){
-				const testcase = new TestcaseSample(outputArray[j],vscode.TreeItemCollapsibleState.None);
-				output.addChild(testcase);
-			}
-			sampleList.push(test)
-		}
-		createTestcaseSampleTreeView();
+		// for(var i = 0 ; i < NumberOfTest ; i++){
+		// 	var inputArray  = problems[i].testInputSample[0].split('\n')
+		// 	var outputArray  = problems[i].testOutputSample[0].split('\n')
+		// 	const test = new TestcaseSample("test" + i, vscode.TreeItemCollapsibleState.None);
+		// 	const input = new TestcaseSample("Input",vscode.TreeItemCollapsibleState.Collapsed);
+		// 	const output = new TestcaseSample("Output",vscode.TreeItemCollapsibleState.Collapsed);
+		// 	test.addChild(input);
+		// 	test.addChild(output);
+		// 	for(var j = 0 ; j < inputArray.length ; j++){
+		// 		const testcase = new TestcaseSample(inputArray[j],vscode.TreeItemCollapsibleState.None);
+		// 		input.addChild(testcase);
+		// 	}
+		// 	for(var j = 0 ; j < outputArray.length ; j++){
+		// 		const testcase = new TestcaseSample(outputArray[j],vscode.TreeItemCollapsibleState.None);
+		// 		output.addChild(testcase);
+		// 	}
+		// 	sampleList.push(test)
+		// }
+		// createTestcaseSampleTreeView();
+
+		// const test = new TestcaseSample("Get Problem", vscode.TreeItemCollapsibleState.None);
+		// sampleList.push(test);
+		// const provider = new testcaseSampleProvider();
+		// const view = vscode.window.createTreeView('joy-Menu',{
+		// 	treeDataProvider: provider
+		// });
+		// view.onDidChangeSelection(e => {
+		// 	provider.onTreeItemClick(e.selection);
+		// 	console.log(e.selection[0].label)
+		// })
 
 		vscode.window.showInformationMessage("문제를 성공적으로 가지고 왔습니다. test 폴더의 main.c에서 코드를 작성해주세요.")
 
@@ -185,7 +215,7 @@ function activate(context) {
 
 		console.log("Problem check : " + problems[problemNum].check);
 		if(problems[problemNum].check){
-			vscode.window.showInformationMessage("TestCase에 통과하였습니다.");
+			vscode.window.showInformationMessage("TestCase에 통과하였습니다. (" + problems[problemNum].pass + " / " + problems[problemNum].testNum + ")");
 		}else{
 			vscode.window.showErrorMessage(`TestCase에 통과하지 못하였습니다.`);
 		}
@@ -203,7 +233,17 @@ function activate(context) {
 			);
 			let htmlContent = view.webview.html;
 			  // HTML 내용에 글씨를 추가합니다.
-			  htmlContent += '<h2>' + i + "번 문제 : " + problems[i].title+'</h2>'+problems[i].content;
+			var inputArray  = problems[i].testInputSample[0].split('\n');
+			var outputArray  = problems[i].testOutputSample[0].split('\n');
+			htmlContent += '<h1>' + i + "번 문제 : " + problems[i].title+'</h1>'+problems[i].content;
+			htmlContent += '<br><br>Input :';
+			for(var j = 0 ; j < inputArray.length ; j++){
+				htmlContent += '<br>' + inputArray[j];
+			}
+			htmlContent += '<br><br>Output :';
+			for(var j = 0 ; j < outputArray.length ; j++){
+				htmlContent += '<br>' + outputArray[j];
+			}
 			view.webview.html = htmlContent;
 		}
 	});
@@ -232,6 +272,7 @@ function activate(context) {
   		.catch(error => {
     		console.error(error); // 오류 출력
 		});
+		vscode.window.showInformationMessage("결과를 정상적으로 전송하였습니다. 수고하셨습니다.")
 	});
 
 	let test = vscode.commands.registerCommand('JOY.test', async function () {
@@ -311,7 +352,6 @@ function activate(context) {
                 console.error('컴파일 에러');
             }
         });
-		
 	});
 
 	async function handleTestCaseResult(passed) {
@@ -320,6 +360,7 @@ function activate(context) {
 			const activeFilePath = activeEditor.document.fileName;
 			const problemNum = (path.dirname(activeFilePath)).slice(-1);
 			problems[problemNum].isCompile = true;
+			problems[problemNum].pass++;
 		} else {
 			const activeEditor = vscode.window.activeTextEditor;
 			const activeFilePath = activeEditor.document.fileName;
@@ -363,6 +404,23 @@ class testcaseSampleProvider{
 			return Promise.resolve(element.children);
 		}
     }
+
+	onTreeItemClick(node){
+		// const command = 'JOY:Show Problem';
+		// console.log("asdasd")
+		["Get Problem", "Show Problem", "Judge On You", "Get Result", "Send Result"]
+		if(node == 'Get Problem'){
+			vscode.commands.executeCommand('JOY.get');
+		}else if(node == 'Show Problem'){
+			vscode.commands.executeCommand('JOY.show');
+		}else if(node == 'Judge On You'){
+			vscode.commands.executeCommand('JOY.test');
+		}else if(node == 'Get Result'){
+			vscode.commands.executeCommand('JOY.result');
+		}else if(node == 'Send Result'){
+			vscode.commands.executeCommand('JOY.send');
+		}
+	}
 }
 
 class TestcaseSample extends vscode.TreeItem {

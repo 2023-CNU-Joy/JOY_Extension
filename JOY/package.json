@@ -24,8 +24,8 @@
     "views": {
       "JOY": [
         {
-          "id": "joy-InOut",
-          "name": "In_Out"
+          "id": "joy-Menu",
+          "name": "Menu"
         }
       ]
     },
