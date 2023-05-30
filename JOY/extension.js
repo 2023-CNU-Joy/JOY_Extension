@@ -5,7 +5,6 @@ const fs = require('fs');
 const axios = require('axios').default;
 const CryptoJS = require('crypto-js');
 
-
 var sampleList = [];
 var check = true;
 
