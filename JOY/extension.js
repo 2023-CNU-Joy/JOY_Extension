@@ -30,7 +30,7 @@ function activate(context) {
 		try {
 		  	const response = await axios.get(server_ip+"/api/v1/problems");
 		  	const data = response.data;
-		  	console.log("Prpblems : " + data);
+		  	console.log("Problems : " + data);
 		//   var ddata = JSON.stringify();
 		  	NumberOfTest = data.length;
 
@@ -377,7 +377,7 @@ class TestcaseSample extends vscode.TreeItem {
 	addChild(child){
 		this.children.push(child);
 	}
-	getChildrne(){
+	getChildren(){
 		return this.children;
 	}
 }
