@@ -130,14 +130,13 @@ function activate(context) {
 		);
 		let htmlContent = view.webview.html;
 		  // HTML 내용에 글씨를 추가합니다.
-		  htmlContent += '<h2>1. Enter the server\'s IP and your ID in the settings of the JOY Extension</h2> \
-		  				  <h2>2. Use the "JOY:Get Problem" command to receive the problem</h2>\
-						  <h2>3. Use the "JOY:Show Problem" command to determine the content of the problem</h2>\
-						  <h2>4. Example inputs and outputs for the problem can be found in the sidebar</h2>\
-						  <h2>5. Write the code in the main.c in each test folder created</h2>\
-						  <h2>6. When you\'re done writing the code, use the "JOY:Judge On You" command to score</h2>\
-						  <h2>7. Use the "JOY:Get Result" command to check the results for the code</h2>\
-						  <h2>7. If you have solved all the problems, use the "JOY:Send Result" command to send the results</h2>'
+		  htmlContent += '<h2>1. Extension setting에 들어가서 서버의 주소와 ID를 입력해주세요.</h2> \
+		  				  <h2>2. 왼쪽의 Extension 메뉴를 클릭 후 Get Problem을 클릭하거나 "JOY:Get Problem" 명령을 통해 문제를 수령학세요.</h2>\
+						  <h2>3. 메뉴에서 Show Problem을 클릭하거나 "JOY:Show Problem" 명령을 입력하여 문제를 확인하세요.</h2>\
+						  <h2>4. 파일 목록에 각각 생성된 문제 폴더의 main.c에서 문제에 대한 코드를 작성하세요.</h2>\
+						  <h2>5. 문제에 대한 코드를 모두 작성하였다면 메뉴의 Judge On You를 클릭하거나 "JOY:Judge On You"명령을 입력하여 Compile하세요.</h2>\
+						  <h2>6. 메뉴의 Get Result를 클릭하거나 "JOY:Get Result" 명령을 입력하여 결과를 확인하세요.</h2>\
+						  <h2>7. 모든 문제에 대해서 반복 후 결과를 제출하고싶다면 메뉴의 Send Result를 클릭하거나 "JOY:Send Result"명령을 입력하세요.</h2>'
 						  
 		view.webview.html = htmlContent;
 	});
